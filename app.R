@@ -4,13 +4,13 @@ library(ggplot2)
 library(dplyr)
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Аналитический дашборд"),
+  dashboardHeader(title = "Analytical Dashboard"),
   dashboardSidebar(
-    selectInput("dataset", "Датасет:",
+    selectInput("dataset", "Dataset:",
                 choices = c("iris", "mtcars", "faithful")),
-    selectInput("chart_type", "Тип графика:",
+    selectInput("chart_type", "Chart type:",
                 choices = c("scatter", "bar", "histogram", "boxplot")),
-    sliderInput("sample_size", "Размер выборки:",
+    sliderInput("sample_size", "Sample size:",
                 min = 10, max = 100, value = 50)
   ),
   dashboardBody(
@@ -20,13 +20,13 @@ ui <- dashboardPage(
       valueBoxOutput("unique_box")
     ),
     fluidRow(
-      box(title = "График", status = "primary", solidHeader = TRUE,
+      box(title = "Chart", status = "primary", solidHeader = TRUE,
           width = 8, plotOutput("main_plot", height = 400)),
-      box(title = "Статистика", status = "info", solidHeader = TRUE,
+      box(title = "Statistics", status = "info", solidHeader = TRUE,
           width = 4, verbatimTextOutput("summary_stats"))
     ),
     fluidRow(
-      box(title = "Таблица данных", status = "warning", solidHeader = TRUE,
+      box(title = "Data table", status = "warning", solidHeader = TRUE,
           width = 12, DT::dataTableOutput("data_table"))
     )
   )
@@ -39,15 +39,15 @@ server <- function(input, output, session) {
   })
 
   output$rows_box <- renderValueBox({
-    valueBox(nrow(data()), "Строк", icon = icon("table"), color = "blue")
+    valueBox(nrow(data()), "Rows", icon = icon("table"), color = "blue")
   })
 
   output$cols_box <- renderValueBox({
-    valueBox(ncol(data()), "Столбцов", icon = icon("columns"), color = "green")
+    valueBox(ncol(data()), "Columns", icon = icon("columns"), color = "green")
   })
 
   output$unique_box <- renderValueBox({
-    valueBox(length(unique(data()[[1]])), "Уникальных значений", icon = icon("star"), color = "orange")
+    valueBox(length(unique(data()[[1]])), "Unique values", icon = icon("star"), color = "orange")
   })
 
   output$main_plot <- renderPlot({
@@ -62,17 +62,17 @@ server <- function(input, output, session) {
     } else if (input$chart_type == "bar") {
       ggplot(df, aes_string(x = names(df)[1])) +
         geom_bar(fill = "steelblue", alpha = 0.7) +
-        labs(title = paste("Распределение", names(df)[1])) +
+        labs(title = paste("Distribution of", names(df)[1])) +
         theme_minimal()
     } else if (input$chart_type == "histogram" && length(numeric_cols) >= 1) {
       ggplot(df, aes_string(x = numeric_cols[1])) +
         geom_histogram(fill = "steelblue", alpha = 0.7, bins = 15) +
-        labs(title = paste("Гистограмма", numeric_cols[1])) +
+        labs(title = paste("Histogram of", numeric_cols[1])) +
         theme_minimal()
     } else if (input$chart_type == "boxplot" && length(numeric_cols) >= 1) {
       ggplot(df, aes_string(y = numeric_cols[1])) +
         geom_boxplot(fill = "steelblue", alpha = 0.7) +
-        labs(title = paste("Бокс-плот", numeric_cols[1])) +
+        labs(title = paste("Box plot of", numeric_cols[1])) +
         theme_minimal()
     }
   })
